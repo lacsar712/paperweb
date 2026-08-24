@@ -119,7 +119,7 @@ func (a *App) Trip(ctx context.Context, reason string) error {
 	snap := a.Snapshot()
 	comb := a.headbox.Trip(snap.Headbox)
 	_ = a.store.UpdateHeadbox(a.cfg.UnitID, comb)
-	a.interlock.Gate().Block(a.cfg.UnitID, "trip")
+	a.interlock.Gate().Block(a.cfg.UnitID, tripGateReason(reason))
 	state, err := a.fsm.Dispatch(ctx, fsm.EvTrip)
 	if err != nil {
 		return err
@@ -233,6 +233,32 @@ func (a *App) runTick(ctx context.Context) error {
 	a.telemetry.RecordTick(firing)
 	if a.couch.TripRequired(couchReading) {
 		_ = a.Trip(ctx, "couch_level")
+		return nil
+	}
+	if a.wireline.Pressure().TripRequired(wirelineReading.SteamPressurePSI) {
+		_ = a.Trip(ctx, "pressure")
 	}
 	return nil
+}
+
+// tripGateReason maps the free-form trip reason string carried by the shift
+// journal into the typed interlock gate reason. The safety gate is the single
+// source the maintenance web consults to decide whether a trip was a tension
+// (pressure) drop versus a generic overload stop, so the reason must survive
+// the trip instead of collapsing to the generic "trip".
+func tripGateReason(reason string) interlock.GateReason {
+	switch reason {
+	case "pressure":
+		return interlock.ReasonPressure
+	case "couch_level":
+		return interlock.ReasonCouchTrip
+	case "headbox":
+		return interlock.ReasonHeadbox
+	case "service":
+		return interlock.ReasonService
+	case "dewater":
+		return interlock.ReasonDewater
+	default:
+		return interlock.ReasonTrip
+	}
 }

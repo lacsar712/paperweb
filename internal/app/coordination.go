@@ -82,6 +82,9 @@ func (a *App) PlantHealth() map[string]string {
 		"headbox_ok": fmt.Sprintf("%v", a.permissives.HeadboxOK()),
 		"fiber_ok":    fmt.Sprintf("%v", a.permissives.FiberOK()),
 	}
+	if reason, blocked := a.interlock.Gate().Reason(a.cfg.UnitID); blocked {
+		out["trip_reason"] = string(reason)
+	}
 	ready, detail := a.WarmupStatus()
 	out["warmup_ready"] = fmt.Sprintf("%v", ready)
 	out["warmup_detail"] = detail
