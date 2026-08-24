@@ -15,6 +15,6 @@ func CloneCouchSnapshot(s model.PlantSnapshot) CouchSnapshotView {
 		Couch:     s.Couch,
 		Revision: s.Revision,
 	}
-	out.Alarms = s.Alarms[:len(s.Alarms):len(s.Alarms)]
+	out.Alarms = append([]model.AlarmEvent(nil), s.Alarms...)
 	return out
 }
