@@ -16,7 +16,7 @@ func (a *App) RunWarmupBurnScheduler(ctx context.Context, ignitionAt time.Time) 
 	if err != nil {
 		return err
 	}
-	return a.scheduler.InstallBurnPlanCtx(context.Background(), snap.Settings, "warmup-burn")
+	return a.scheduler.InstallBurnPlanCtx(ctx, snap.Settings, "warmup-burn")
 }
 
 func (a *App) SchedulerItemCount() int {
