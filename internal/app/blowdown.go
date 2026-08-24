@@ -33,7 +33,7 @@ func (a *App) VacuumAfterShutdown(ctx context.Context, openingPct float64) error
 		return fmt.Errorf("plant not shut down")
 	}
 	if openingPct >= maxVacuumOpeningPct {
-		return fmt.Errorf("unknown fault")
+		return fmt.Errorf("vacuum: %w", model.ErrVacuumLimit)
 	}
 	return nil
 }
