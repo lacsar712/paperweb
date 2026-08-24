@@ -72,9 +72,9 @@ func (f *WirelineFSM) Dispatch(ctx context.Context, event PlantEvent) (model.Pla
 	}
 	next, ok := NextState(f.state, event)
 	if !ok {
-		if f.hooks != nil {
-			_ = f.hooks.RunAfter(ctx, f.state, f.state, event)
-		}
+		// Rejected transition: state is unchanged, so after-hooks (which drive
+		// downstream side effects such as the stock-pump drive pulse) must not
+		// fire. Running them here would actuate the pump from standby.
 		return f.state, fmt.Errorf("%s from %s: %w", event, f.state, ErrIllegalTransition)
 	}
 	if event == EvIgnite && !f.fiberPermissive {
