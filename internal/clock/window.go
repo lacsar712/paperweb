@@ -39,7 +39,7 @@ func NewDewaterWindow(clk ProcessClock) *DewaterWindow {
 }
 
 func (p *DewaterWindow) Ready(startedAt time.Time) bool {
-	return time.Since(startedAt) >= model.DewaterWindow
+	return p.window.Satisfied(p.clk, startedAt)
 }
 
 func (p *DewaterWindow) Require(startedAt time.Time) error {
