@@ -1,6 +1,6 @@
 # paperweb
 
-Paper machine wet-end coordination service with operator HMI under internal/web.
+paperweb 是一套造纸机湿部协调工业过程控制系统，用于网部真空爬坡、浆料误差链与网部租约。
 
 ## Requirements
 
